@@ -29,7 +29,6 @@ static inline void outb(uint16_t port, uint8_t val)
 
 void initialize_ps2() {
    uint8_t current_config;
-   printk("initialize ps2\n");
    /*disable ports*/
    outb(CMD, 0xAD);
    outb(CMD, 0xA7);
@@ -40,8 +39,6 @@ void initialize_ps2() {
    while((inb(CMD) & OUT_STATUS) == 0){
    };
    current_config = inb(DATA);
-
-   printk("initialize ps2\n");
 
    /*modify it*/
    current_config |= FIRST_INTERUPT;
@@ -58,22 +55,17 @@ void initialize_ps2() {
    while((inb(CMD) & IN_STATUS) != 0) {
    };
    outb(DATA, current_config);
-   printk("initialize ps2\n");
-
 }
 
 void initialize_keyboard() {
    uint8_t resp;
-   printk("initialize keyboard\n");
    /*reset*/
 
    resp = 0;
    while (resp != 0xAA) {
-      printk("loop\n");
       resp = 0;
       while((inb(CMD) & IN_STATUS) != 0) {
       };
-      printk("mid loop\n");
       outb(DATA, 0xFF);
       /*read ack, then resp*/
       while((inb(CMD) & OUT_STATUS) == 0){
@@ -82,26 +74,21 @@ void initialize_keyboard() {
       while((inb(CMD) & OUT_STATUS) == 0){
       };
       resp = inb(DATA);
-      printk("mid loop\n");
       if (resp == 0xFC || resp == 0xFD) {
          printk("keyboard broke\n");
          return;
       }
-      printk("end loop\n");
-      printk("%x\n", resp);
+      /*printk("%x\n", resp);*/
    }
    
-   printk("keyboard reset\n");
 
    /*set scan code*/
    resp = 0;
    while (resp != 0xFA) {
       resp = 0;
-      printk("loop2\n");
       while ((inb(CMD) & IN_STATUS) != 0) {
       };
       outb(DATA, 0xF0);
-      printk("loop2\n");
       /*read the ack*/
       while((inb(CMD) & OUT_STATUS) == 0){
       };
@@ -113,10 +100,7 @@ void initialize_keyboard() {
       while((inb(CMD) & OUT_STATUS) == 0){
       };
       resp = inb(DATA);
-      printk("end loop2\n");
    }
-
-   printk("scan code set\n");
 
    /*enable keyboard*/
    resp = 0;
@@ -130,7 +114,6 @@ void initialize_keyboard() {
       resp = inb(DATA);
    }
 
-   printk("end\n");
 }
 
 void convert_code(uint8_t resp) {
