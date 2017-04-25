@@ -39,7 +39,7 @@ uint64_t irq_c_table[256] = {
 (uint64_t) not_implemented_irq,
 (uint64_t) not_implemented_irq,
 (uint64_t) not_implemented_irq,
-(uint64_t) not_implemented_irq,
+(uint64_t) serial_interupt,
 (uint64_t) not_implemented_irq,
 (uint64_t) not_implemented_irq,
 (uint64_t) not_implemented_irq,

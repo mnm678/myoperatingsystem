@@ -3,6 +3,7 @@
 #include "printk.h"
 #include "idt_setup.h"
 #include "interupts.h"
+#include "serial.h"
 #include <limits.h>
 
 int kmain() {
@@ -29,7 +30,22 @@ int kmain() {
    }*/
 
    STI();
-   /*serial_write_char('a');*/
+   serial_write_char('a');
+   serial_write_char('\n');
+   serial_write_char('a');
+   serial_write_char('\n');
+   serial_write_char('a');
+   serial_write_char('\n');
+   serial_write_char('a');
+   serial_write_char('\n');
+   serial_write_char('a');
+   serial_write_char('\n');
+   serial_write_char('a');
+   serial_write_char('\n');
+   serial_write_char('a');
+   serial_write_char('\n');
+   serial_write_char('a');
+   serial_write_char('\n');
    /*irq20_handler();*/
 
    /*printk("hello\n");

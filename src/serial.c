@@ -7,6 +7,7 @@
 char serial_buf[SERIAL_BUF_LEN];
 uint16_t head;
 uint16_t tail;
+int busy;
 
 void serial_setup() {
    outb(SERIAL_PORT + 1, 0x00);

@@ -23,7 +23,8 @@ run: $(img)
 	@qemu-system-x86_64 -drive format=raw,file=$(img)
 
 test: $(img)
-	@qemu-system-x86_64 -s -drive format=raw,file=$(img) -monitor stdio
+	@qemu-system-x86_64 -s -drive format=raw,file=$(img) -serial stdio
+#-monitor stdio
 
 img: $(img)
 
