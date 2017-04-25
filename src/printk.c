@@ -1,13 +1,13 @@
 #include "VGA_Driver.h"
 #include <stdarg.h>
 #include <limits.h>
+#include "interupts.h"
 
 void print_uint(unsigned long long in) {
    unsigned long long temp = in;
    unsigned long long var = in;
    long long pow;
    int i = 0;
-   int j;
    int digit;
 
    /*number of digits*/
@@ -40,7 +40,6 @@ void print_hex(long long in) {
    unsigned long long var = in;
    long long pow;
    int i = 0;
-   int j;
    int digit;
 
    /*number of digits*/
@@ -80,7 +79,6 @@ void print_int(long long in) {
    unsigned long long var;
    long long pow;
    int i = 0;
-   int j;
    int digit;
    if (in < 0) {
       VGA_display_char('-');
@@ -120,6 +118,12 @@ void print_int(long long in) {
 extern int printk(const char *fmt, ...) {
    va_list va;
    va_start(va, fmt);
+   int count = 0;
+   int interupts = are_interupts_enabled();
+
+   if(interupts) {
+      CLI();
+   }
    
    while (*fmt != 0) {
       if (*fmt == '%') {
@@ -196,8 +200,15 @@ extern int printk(const char *fmt, ...) {
          VGA_display_char(*fmt);
       }
 
+      count++;
+
       fmt++;
    }
 
    va_end(va);
+
+   if(interupts) {
+      STI();
+   }
+   return count;
 }

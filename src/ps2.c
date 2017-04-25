@@ -9,7 +9,7 @@ int shifted = 0;
 /*extern void outb(int port, char byte);
 extern char inb(int port);*/
 
-static inline uint8_t inb(uint16_t port)
+inline uint8_t inb(uint16_t port)
 {
     uint8_t ret;
     asm volatile ( "inb %1, %0"
@@ -18,7 +18,7 @@ static inline uint8_t inb(uint16_t port)
     return ret;
 }
 
-static inline void outb(uint16_t port, uint8_t val)
+inline void outb(uint16_t port, uint8_t val)
 {
     asm volatile ( "outb %0, %1" : : "a"(val), "Nd"(port) );
     /* There's an outb %al, $imm8  encoding, for compile-time constant port numbers that fit in 8b.  (N constraint).

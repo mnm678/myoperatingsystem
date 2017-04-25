@@ -5,17 +5,17 @@ section .text
 bits 64
 
 ;outb(port, 2byte)
-outb:
+;outb:
 
 ;out si, di
 
-ret
+;ret
 
 ;inb(port) returns 2byte
-inb:
+;inb:
 
 ;in ax, di
-in ax, 0x64
+;in ax, 0x64
 
-ret
+;ret
 

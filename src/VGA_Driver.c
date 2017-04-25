@@ -61,7 +61,7 @@ extern void VGA_display_char(char inc) {
    find_space();
 }
 
-extern void VGA_display_str(const char *s) {
+extern void VGA_display_str(char *s) {
    int count = strlen(s);
    char *temp = s;
    while (count--) {

@@ -1,7 +1,7 @@
 arch ?= x86_64
 kernel := build/kernel-$(arch).bin
 img := build/os.img
-cc := x86_64-elf-gcc-6.3.0
+cc := x86_64-elf-gcc-6.3.0 -g -Wall -mno-red-zone
 
 linker_script := src/linker.ld
 grub_cfg := src/grub.cfg
@@ -21,6 +21,9 @@ clean:
 
 run: $(img)
 	@qemu-system-x86_64 -drive format=raw,file=$(img)
+
+test: $(img)
+	@qemu-system-x86_64 -s -drive format=raw,file=$(img) -monitor stdio
 
 img: $(img)
 
