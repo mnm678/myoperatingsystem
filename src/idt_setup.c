@@ -97,6 +97,16 @@ typedef struct tss_descriptor {
    uint32_t res3:19;
 }__attribute__((packed)) tss_descriptor;
 
+typedef struct gdt_entry{
+   uint64_t entry;
+}__attribute__((packed)) gdt_entry;
+
+extern tss_descriptor gdt64[2];
+
+typedef struct gdt_representation{
+   uint16_t size;
+   uint64_t ptr;
+}__attribute__((packed)) gdt_representation;
 
 void tss_setup() {
    tss_descriptor TSS_descriptor;
@@ -108,6 +118,8 @@ void tss_setup() {
    TSS.IST1 = &gp_tss;
    TSS.IST2 = &df_tss;
    TSS.IST3 = &pf_tss;
+
+   TSS_descriptor = gdt64[1];
 
    TSS_descriptor.base_addr_1 = ((uint64_t)(&TSS)) & mask1;
    TSS_descriptor.base_addr_2 = (((uint64_t)(&TSS)) & mask2) >> 16;
@@ -123,9 +135,6 @@ void tss_setup() {
    
    TSS_descriptor.segment_limit = sizeof(tss) & 0xFFFF;
    TSS_descriptor.segment_limit_2 = (sizeof(tss) & 0xF0000) >>16;
-
-   /*GDT[3] = TSS_descriptor;*/
-
 
 }
 
@@ -229,4 +238,11 @@ uint16_t pic_get_isr() {
    outb(PIC1, 0x0b);
    outb(PIC2, 0x0b);
    return (inb(PIC2) << 8) | inb(PIC1);
+}
+
+void IRQ_end_of_interupt(int irq) {
+   if(irq < 8) {
+      outb(PIC2, 0x20);
+   }
+   outb(PIC1, 0x20);
 }

@@ -216,8 +216,8 @@ void convert_code(uint8_t resp) {
 
 void read_and_print() {
    uint8_t resp;
-   while((inb(CMD) & OUT_STATUS) == 0) {
-   };
+   /*while((inb(CMD) & OUT_STATUS) == 0) {
+   };*/
    resp = inb(DATA);
 
    convert_code(resp);

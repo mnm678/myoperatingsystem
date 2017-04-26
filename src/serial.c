@@ -45,6 +45,13 @@ void serial_write_char(char c) {
    }
 }
 
+void serial_write(char *buff, int len) {
+   int i;
+   for (i = 0; i<len; i++) {
+      serial_write_char(buff[i]);
+   }
+}
+
 void serial_interupt(void *irq) {
    /*check iir*/
    char iir = inb(SERIAL_PORT + 2);
@@ -65,4 +72,3 @@ void serial_interupt(void *irq) {
    }
 
 }
-

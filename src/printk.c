@@ -2,6 +2,17 @@
 #include <stdarg.h>
 #include <limits.h>
 #include "interupts.h"
+#include "serial.h"
+
+void display_char(char c) {
+   VGA_display_char(c);
+   /*serial_write_char(c);*/
+}
+
+void display_str(char *s) {
+   VGA_display_str(s);
+   serial_write(s, strlen(s));
+}
 
 void print_uint(unsigned long long in) {
    unsigned long long temp = in;
@@ -22,7 +33,7 @@ void print_uint(unsigned long long in) {
 
    while (pow >= 1) {
       digit = temp/pow;
-      VGA_display_char('0' + digit);
+      display_char('0' + digit);
       temp -= digit * pow;
 
       pow = pow / 10;
@@ -55,10 +66,10 @@ void print_hex(long long in) {
    while (pow >= 1) {
       digit = temp/pow;
       if (digit < 10) {
-         VGA_display_char('0' + digit);
+         display_char('0' + digit);
       }
       else {
-         VGA_display_char('a' + digit - 10);
+         display_char('a' + digit - 10);
       }
       temp -= digit * pow;
 
@@ -81,7 +92,7 @@ void print_int(long long in) {
    int i = 0;
    int digit;
    if (in < 0) {
-      VGA_display_char('-');
+      display_char('-');
       temp = in - 1;
       temp = ~temp;
    }
@@ -102,7 +113,7 @@ void print_int(long long in) {
 
    while (pow >= 1) {
       digit = temp/pow;
-      VGA_display_char('0' + digit);
+      display_char('0' + digit);
       temp -= digit * pow;
 
       pow = pow / 10;
@@ -129,7 +140,7 @@ extern int printk(const char *fmt, ...) {
       if (*fmt == '%') {
          switch(*(fmt+1)) {
             case '%':
-               VGA_display_char('%');
+               display_char('%');
                break;
             case 'd':
                print_int((long long)va_arg(va, int));
@@ -141,7 +152,7 @@ extern int printk(const char *fmt, ...) {
                print_hex(va_arg(va, int));
                break;
             case 'c':
-               VGA_display_char(va_arg(va, int));
+               display_char(va_arg(va, int));
                break;
             case 'p':
                print_hex((long)va_arg(va, void*));
@@ -189,7 +200,7 @@ extern int printk(const char *fmt, ...) {
                fmt++;
                break;
             case 's':
-               VGA_display_str(va_arg(va, char*));
+               display_str(va_arg(va, char*));
                break;
          }
 
@@ -197,7 +208,7 @@ extern int printk(const char *fmt, ...) {
 
       }
       else {
-         VGA_display_char(*fmt);
+         display_char(*fmt);
       }
 
       count++;

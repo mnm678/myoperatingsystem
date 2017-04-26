@@ -7,11 +7,11 @@
 #include <limits.h>
 
 int kmain() {
-   /*int test = 1;
+   int test = 1;
    short test_short = 2;
    unsigned short test_ushort = 100;
    unsigned long test_ulong = 3000000000;
-   long test_long = -40000000000;*/
+   long test_long = -40000000000;
    int k=0;
    while(k) {
    };
@@ -22,7 +22,7 @@ int kmain() {
    IRQ_set_all_masks();
    IRQ_clear_mask(1);
    VGA_clear();
-   serial_setup();
+   /*serial_setup();*/
 
    /*while(1) {
       printk("%d\n",pic_get_irr());
@@ -30,25 +30,14 @@ int kmain() {
    }*/
 
    STI();
-   serial_write_char('a');
+   /*serial_write_char('a');
    serial_write_char('\n');
    serial_write_char('a');
    serial_write_char('\n');
-   serial_write_char('a');
-   serial_write_char('\n');
-   serial_write_char('a');
-   serial_write_char('\n');
-   serial_write_char('a');
-   serial_write_char('\n');
-   serial_write_char('a');
-   serial_write_char('\n');
-   serial_write_char('a');
-   serial_write_char('\n');
-   serial_write_char('a');
-   serial_write_char('\n');
+   serial_write("hello, world\n", 13);*/
    /*irq20_handler();*/
 
-   /*printk("hello\n");
+   printk("hello\n");
    printk("%d\n", 4);
    printk("%d\n", -54921);
    printk("%u\n", 45);
@@ -70,16 +59,17 @@ int kmain() {
    printk("%qx\n", test_long);
    printk("%s", "TEST\n");
 
-   printk("goodbye\n");*/
+   printk("goodbye\n");
 
    /*initialize_ps2();
    initialize_keyboard();*/
+   /*asm("int $0x21");
+   asm("int $0x21");*/
 
    k = 1;
    while(k) {
       /*read_and_print();*/
       
    }
-   asm("int $0x20");
 
 }

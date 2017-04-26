@@ -289,6 +289,7 @@ IDT_entry IDT_table[256];
 void IRQ_set_all_masks();
 void IRQ_set_mask(unsigned char);
 void IRQ_clear_mask(unsigned char);
+void IRQ_end_of_interupt(int);
 
 /*uint64_t asm_irq_handler_table[256];*/
 
