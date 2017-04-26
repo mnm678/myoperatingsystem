@@ -6,7 +6,7 @@
 
 void display_char(char c) {
    VGA_display_char(c);
-   /*serial_write_char(c);*/
+   serial_write_char(c);
 }
 
 void display_str(char *s) {

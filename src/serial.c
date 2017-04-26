@@ -1,5 +1,5 @@
 #define SERIAL_PORT 0x3f8
-#define SERIAL_BUF_LEN 4096
+#define SERIAL_BUF_LEN 10
 
 #include "serial.h"
 #include "interupts.h"
@@ -20,28 +20,42 @@ void serial_setup() {
    head = tail = 0;
 }
 
+int is_transmit_empty() {
+   return inb(SERIAL_PORT + 5) & 0x20;
+}
+
+BB_busy = 0;
+
 void serial_write_char(char c) {
    int interupts = are_interupts_enabled();
    int first = 0;
+   int k = 1;
 
    if(interupts) {
       CLI();
    }
+
+   BB_busy = !(is_transmit_empty());
+
    if(head == tail) {
       first = 1;
+   }
+   else {
+      /*while(k) {};*/
    }
    /*if there isn't space, the data will be lost*/
    if ((tail + 1)%SERIAL_BUF_LEN != head) {
       /*there's space*/
       serial_buf[tail] = c;
-      tail++;
+      tail = (tail + 1) % SERIAL_BUF_LEN;
    }
    if(interupts) {
       STI();
    }
 
-   if(first) {
-      asm("int $0x24");
+   if(!BB_busy) {
+      /*asm("int $0x24");*/
+      serial_interupt(0);
    }
 }
 
@@ -63,11 +77,18 @@ void serial_interupt(void *irq) {
    }
    
    if (!(4 & iir)) {
-      outb(SERIAL_PORT, serial_buf[head]);
-      head++;
+      if(head != tail) {
+         outb(SERIAL_PORT, serial_buf[head]);
+         head = (head + 1)%SERIAL_BUF_LEN;
+         BB_busy = 1;
+      }
+      else {
+         BB_busy = 0;
+      }
    }
    else {
       /*hw buffer is full*/
+      BB_busy = 1;
       return;
    }
 

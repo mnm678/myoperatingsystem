@@ -22,7 +22,7 @@ int kmain() {
    IRQ_set_all_masks();
    IRQ_clear_mask(1);
    VGA_clear();
-   /*serial_setup();*/
+   serial_setup();
 
    /*while(1) {
       printk("%d\n",pic_get_irr());
@@ -36,6 +36,9 @@ int kmain() {
    serial_write_char('\n');
    serial_write("hello, world\n", 13);*/
    /*irq20_handler();*/
+   /*k=1;
+   while(k){};*/
+   printk("This is a very long string. Hopefully it is long enough.\n");
 
    printk("hello\n");
    printk("%d\n", 4);
