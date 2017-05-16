@@ -101,7 +101,7 @@ typedef struct gdt_entry{
    uint64_t entry;
 }__attribute__((packed)) gdt_entry;
 
-extern tss_descriptor gdt64[2];
+extern uint64_t gdt64[2];
 
 typedef struct gdt_representation{
    uint16_t size;
@@ -109,33 +109,43 @@ typedef struct gdt_representation{
 }__attribute__((packed)) gdt_representation;
 
 void tss_setup() {
-   tss_descriptor TSS_descriptor;
+   tss_descriptor *TSS_descriptor;
    uint64_t mask1 = 0xFFFF;
    uint64_t mask2 = 0xFF0000;
    uint64_t mask3 = 0xFF000000;
    uint64_t mask4 = 0xFFFFFFFF00000000;
+   uint16_t selector;
+   int k = 1;
 
-   TSS.IST1 = &gp_tss;
-   TSS.IST2 = &df_tss;
-   TSS.IST3 = &pf_tss;
+   TSS.IST1 = ((uint64_t)&gp_tss) + 4096 - 1;
+   TSS.IST2 = ((uint64_t)&df_tss) + 4096 - 1;
+   TSS.IST3 = ((uint64_t)&pf_tss) + 4096 - 1;
+   TSS.ign = 0;
+   TSS.RSP0 = 0;
+   TSS.RSP1 = 0;
+   TSS.RSP2 = 0;
+   TSS.ign_2 = 0;
 
-   TSS_descriptor = gdt64[1];
+   TSS_descriptor = gdt64 + 2;
 
-   TSS_descriptor.base_addr_1 = ((uint64_t)(&TSS)) & mask1;
-   TSS_descriptor.base_addr_2 = (((uint64_t)(&TSS)) & mask2) >> 16;
-   TSS_descriptor.base_addr_3 = (((uint64_t)(&TSS)) & mask3) >> 24;
-   TSS_descriptor.base_addr_4 = (((uint64_t)(&TSS)) & mask4) >> 32;
+   TSS_descriptor->base_addr_1 = ((uint64_t)(&TSS)) & mask1;
+   TSS_descriptor->base_addr_2 = (((uint64_t)(&TSS)) & mask2) >> 16;
+   TSS_descriptor->base_addr_3 = (((uint64_t)(&TSS)) & mask3) >> 24;
+   TSS_descriptor->base_addr_4 = (((uint64_t)(&TSS)) & mask4) >> 32;
 
-   TSS_descriptor.zeros = 0;
-   TSS_descriptor.G = 1; /*limit is in bytes*/
-   TSS_descriptor.P = 1;
-   TSS_descriptor.dpl = 0;
-   TSS_descriptor.pad = 0;
-   TSS_descriptor.Type = 9; /*not busy*/
+   TSS_descriptor->zeros = 0;
+   TSS_descriptor->G = 0; /*limit is in bytes*/
+   TSS_descriptor->P = 1;
+   TSS_descriptor->dpl = 0;
+   TSS_descriptor->pad = 0;
+   TSS_descriptor->Type = 9; /*not busy*/
    
-   TSS_descriptor.segment_limit = sizeof(tss) & 0xFFFF;
-   TSS_descriptor.segment_limit_2 = (sizeof(tss) & 0xF0000) >>16;
+   TSS_descriptor->segment_limit = sizeof(tss) & 0xFFFF;
+   TSS_descriptor->segment_limit_2 = (sizeof(tss) & 0xF0000) >>16;
 
+
+   selector = 0x10;
+   asm("ltr %0" ::"m"(selector));
 }
 
 void idt_setup() {

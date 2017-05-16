@@ -1,12 +1,12 @@
 #define SERIAL_PORT 0x3f8
-#define SERIAL_BUF_LEN 10
+#define SERIAL_BUF_LEN 4096
 
 #include "serial.h"
 #include "interupts.h"
 
 char serial_buf[SERIAL_BUF_LEN];
-uint16_t head;
-uint16_t tail;
+uint32_t head;
+uint32_t tail;
 int busy;
 
 void serial_setup() {
@@ -24,12 +24,11 @@ int is_transmit_empty() {
    return inb(SERIAL_PORT + 5) & 0x20;
 }
 
-BB_busy = 0;
+int BB_busy = 0;
 
 void serial_write_char(char c) {
    int interupts = are_interupts_enabled();
-   int first = 0;
-   int k = 1;
+   int k=1;
 
    if(interupts) {
       CLI();
@@ -37,25 +36,20 @@ void serial_write_char(char c) {
 
    BB_busy = !(is_transmit_empty());
 
-   if(head == tail) {
-      first = 1;
-   }
-   else {
-      /*while(k) {};*/
-   }
    /*if there isn't space, the data will be lost*/
    if ((tail + 1)%SERIAL_BUF_LEN != head) {
       /*there's space*/
       serial_buf[tail] = c;
       tail = (tail + 1) % SERIAL_BUF_LEN;
    }
-   if(interupts) {
-      STI();
-   }
 
    if(!BB_busy) {
-      /*asm("int $0x24");*/
+      /*while(k) {};*/
       serial_interupt(0);
+   }
+
+   if(interupts) {
+      STI();
    }
 }
 

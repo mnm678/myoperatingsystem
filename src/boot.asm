@@ -6,6 +6,7 @@ extern long_mode_start
 section .text
 bits 32
 start:
+    mov edi, ebx
     mov esp, stack_top
 
 	call check_multiboot
@@ -163,5 +164,5 @@ p3_table:
 p2_table:
     resb 4096
 stack_bottom:
-    resb 64
+    resb 128
 stack_top:

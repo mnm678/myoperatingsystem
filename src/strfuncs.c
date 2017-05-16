@@ -12,3 +12,13 @@ extern size_t strlen(char *s) {
 
    return count;
 }
+/*void *memcpy(void *dest, void *src, size_t n) {
+*/
+
+void *memset(void *s, int c, size_t n) {
+   char *mem = s;
+   while(n) {
+      mem[--n] = c;
+   }
+   return s;
+}

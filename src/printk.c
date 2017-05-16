@@ -3,6 +3,7 @@
 #include <limits.h>
 #include "interupts.h"
 #include "serial.h"
+#include "strfuncs.h"
 
 void display_char(char c) {
    VGA_display_char(c);

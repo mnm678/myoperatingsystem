@@ -360,6 +360,19 @@ irq8_handler:
     mov rdi, 8
     jmp common_irq_handler
 
+;irq8_handler:
+;    push rdi
+;    mov rdi, [rsp + 8]
+;    push rax
+;    mov rax, [rsp + 8]
+;    mov [rsp + 16], rax
+;    pop rax
+;    add rsp, 8
+;    push rsi
+;    mov rsi, rdi
+;    mov rdi, 8
+;    jmp error_irq_handler
+
 irq9_handler:
     push rdi
     mov rdi, 9
@@ -382,8 +395,16 @@ irq12_handler:
 
 irq13_handler:
     push rdi
+    mov rdi, [rsp + 8]
+    push rax
+    mov rax, [rsp + 8]
+    mov [rsp + 16], rax
+    pop rax
+    add rsp, 8
+    push rsi
+    mov rsi, rdi
     mov rdi, 13
-    jmp common_irq_handler
+    jmp error_irq_handler
 
 irq14_handler:
     push rdi
