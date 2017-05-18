@@ -1,4 +1,4 @@
-#include "interupts.h"
+#include "interrupts.h"
 #include "multiboot.h"
 #include "strfuncs.h"
 
@@ -136,7 +136,7 @@ void *MMU_pf_alloc() {
    memory_section *temp;
    uint64_t temp_size;
    int k=1;
-   int interrupts = are_interupts_enabled();
+   int interrupts = are_interrupts_enabled();
    /*while(k){};*/
 
    if(interrupts) {

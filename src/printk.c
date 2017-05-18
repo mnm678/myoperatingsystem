@@ -1,7 +1,7 @@
 #include "VGA_Driver.h"
 #include <stdarg.h>
 #include <limits.h>
-#include "interupts.h"
+#include "interrupts.h"
 #include "serial.h"
 #include "strfuncs.h"
 
@@ -131,9 +131,9 @@ extern int printk(const char *fmt, ...) {
    va_list va;
    va_start(va, fmt);
    int count = 0;
-   int interupts = are_interupts_enabled();
+   int interrupts = are_interrupts_enabled();
 
-   if(interupts) {
+   if(interrupts) {
       CLI();
    }
    
@@ -219,7 +219,7 @@ extern int printk(const char *fmt, ...) {
 
    va_end(va);
 
-   if(interupts) {
+   if(interrupts) {
       STI();
    }
    return count;

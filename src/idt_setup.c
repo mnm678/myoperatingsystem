@@ -157,7 +157,7 @@ void idt_setup() {
    int i;
    for(i = 0; i < 256; i++) {
       IDT_table[i].IST = 0;
-      IDT_table[i].type = 0xE; /*interupt gate*/
+      IDT_table[i].type = 0xE; /*interrupt gate*/
       IDT_table[i].buf = 0;
       IDT_table[i].DPL = 0; /*protection level*/
       IDT_table[i].P = 1;
@@ -250,7 +250,7 @@ uint16_t pic_get_isr() {
    return (inb(PIC2) << 8) | inb(PIC1);
 }
 
-void IRQ_end_of_interupt(int irq) {
+void IRQ_end_of_interrupt(int irq) {
    if(irq < 8) {
       outb(PIC2, 0x20);
    }

@@ -2,7 +2,7 @@
 #define SERIAL_BUF_LEN 4096
 
 #include "serial.h"
-#include "interupts.h"
+#include "interrupts.h"
 
 char serial_buf[SERIAL_BUF_LEN];
 uint32_t head;
@@ -27,10 +27,10 @@ int is_transmit_empty() {
 int BB_busy = 0;
 
 void serial_write_char(char c) {
-   int interupts = are_interupts_enabled();
+   int interrupts = are_interrupts_enabled();
    int k=1;
 
-   if(interupts) {
+   if(interrupts) {
       CLI();
    }
 
@@ -45,10 +45,10 @@ void serial_write_char(char c) {
 
    if(!BB_busy) {
       /*while(k) {};*/
-      serial_interupt(0);
+      serial_interrupt(0);
    }
 
-   if(interupts) {
+   if(interrupts) {
       STI();
    }
 }
@@ -60,7 +60,7 @@ void serial_write(char *buff, int len) {
    }
 }
 
-void serial_interupt(void *irq) {
+void serial_interrupt(void *irq) {
    /*check iir*/
    char iir = inb(SERIAL_PORT + 2);
 

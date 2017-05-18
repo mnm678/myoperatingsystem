@@ -2,7 +2,7 @@
 #include "PS2.h"
 #include "printk.h"
 #include "idt_setup.h"
-#include "interupts.h"
+#include "interrupts.h"
 #include "serial.h"
 #include "multiboot.h"
 #include <limits.h>
@@ -21,7 +21,7 @@ int kmain(uint32_t ebx) {
    int i, j;
    uint64_t phy_mem_size;
 
-   /*set up interupts*/
+   /*set up interrupts*/
    PIC_setup();
    idt_setup();
    IRQ_set_all_masks();
