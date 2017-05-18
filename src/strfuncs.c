@@ -22,3 +22,15 @@ void *memset(void *s, int c, size_t n) {
    }
    return s;
 }
+
+void *memmove(void *dest, const void *src, size_t n) {
+   char temp[n];
+   int i;
+   for (i=0; i < n; i++) {
+      temp[i] = ((char*)src)[i];
+   }
+   for (i=0; i < n; i++) {
+      ((char*)dest)[i] = temp[i];
+   }
+   return dest;
+}

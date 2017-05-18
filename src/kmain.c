@@ -7,6 +7,7 @@
 #include "multiboot.h"
 #include <limits.h>
 #include "virtual_allocation.h"
+#include "kmalloc.h"
 
 int kmain(uint32_t ebx) {
    int test = 1;
@@ -51,7 +52,24 @@ int kmain(uint32_t ebx) {
 
    page_frame_test = MMU_alloc_page();
    printk("%x\n", page_frame_test);
+
+   page_frame_test = kmalloc(1);
+   printk("%x\n", page_frame_test);
+
+   page_frame_test = kmalloc(1);
+   printk("%x\n", page_frame_test);
    
+   page_frame_test = kmalloc(100);
+   memset(page_frame_test, 0, 100);
+   printk("%x\n", page_frame_test);
+
+   page_frame_test = kmalloc(1);
+   printk("%x\n", page_frame_test);
+
+   kfree(page_frame_test);
+
+   page_frame_test = kmalloc(1);
+   printk("%x\n", page_frame_test);
 
    /*pf alloc test
    page_frame_test = MMU_pf_alloc();

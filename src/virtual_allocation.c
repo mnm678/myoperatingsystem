@@ -122,6 +122,12 @@ void *MMU_alloc_pages(int num) {
          MMU_alloc_page();
       }
    }
+   if (temp == -1) {
+      if (heap_bottom == 0) {
+         heap_bottom = stack_start + STACK_SIZE*MAX_STACK;
+      }
+      temp = heap_bottom;
+   }
    return temp;
 }
 

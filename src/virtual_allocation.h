@@ -1,3 +1,5 @@
+#pragma once
+
 #include "multiboot.h"
 
 typedef struct CR3_entry {
@@ -40,8 +42,8 @@ void connect_addr(virtual_addr virt, uint64_t phy, uint64_t l4);
 void *add_kstack();
 void *MMU_alloc_page();
 void *MMU_alloc_pages(int num);
-void MMU_free_page(void *);
-void MMU_free_pages(void*, int num);
+void MMU_free_page();
+void MMU_free_pages(int num);
 
 
 void setup_id_map(uint64_t phy_mem_size);
