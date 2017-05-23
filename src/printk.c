@@ -47,7 +47,7 @@ void print_uint(unsigned long long in) {
    }
 }
 
-void print_hex(long long in) {
+void print_hex(unsigned long long in) {
    unsigned long long temp = in;
    unsigned long long var = in;
    long long pow;

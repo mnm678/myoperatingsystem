@@ -34,10 +34,13 @@ int kmain(uint32_t ebx) {
       printk("%d\n",pic_get_isr());
    }*/
 
+
    phy_mem_size = findMemory(ebx);
    setup_id_map(phy_mem_size);
 
    STI();
+
+   printk("%x\n", -5);
 
    page_frame_test = MMU_alloc_page();
    printk("%x\n", page_frame_test);
@@ -49,6 +52,10 @@ int kmain(uint32_t ebx) {
    }
 
    MMU_free_page(page_frame_test);
+
+   for (i=0; i < 10000; i++) {
+      page_frame_test = MMU_alloc_page();
+   }
 
    page_frame_test = MMU_alloc_page();
    printk("%x\n", page_frame_test);

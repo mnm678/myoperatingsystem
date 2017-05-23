@@ -26,8 +26,10 @@ void tss_test(void *irq, void *err) {
 void page_fault_handler(uint64_t irq, uint64_t err) {
    pt_entry *l1;
    union virt j;
+   int k=1;
 
    printk("page fault\n");
+   /*while(k){};*/
 
    j.i = getCR2();
 

@@ -2,7 +2,7 @@
 
 /*2MB*/
 #define STACK_SIZE 2097152
-#define MAX_STACK 16
+#define MAX_STACK 1024
 
 void setCR3(uint64_t CR3) {
    asm("mov %0, %%cr3;" :: "r" ( CR3 ));
@@ -97,14 +97,18 @@ void *MMU_alloc_page() {
    uint64_t CR3 = getCR3();
    void *phy = MMU_pf_alloc();
    union virt j;
+   pt_entry *l1;
+
    
    if (heap_bottom == 0) {
       heap_bottom = stack_start + STACK_SIZE*MAX_STACK;
    }
 
-
    j.i = heap_bottom;
-   connect_addr(j.va, phy, CR3);
+   l1 = setup_pt(j.va, CR3);
+
+   l1[j.va.l1_ndx].avl = 1;
+
    heap_bottom += PAGE_SIZE;
 
    return heap_bottom - PAGE_SIZE;
@@ -159,6 +163,8 @@ void setup_id_map(uint64_t phy_mem_size) {
    int k=1;
 
    stack_start = phy_mem_size;
+
+   printk("stack start: %x\n", stack_start);
 
    for(i=0; i < phy_mem_size/PAGE_SIZE; i++){
       j.i = i * PAGE_SIZE;
