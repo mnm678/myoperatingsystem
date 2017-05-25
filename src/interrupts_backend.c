@@ -4,6 +4,7 @@
 #include "idt_setup.h"
 #include "PS2.h"
 #include "virtual_allocation.h"
+#include "sys_calls.h"
 
 void printSP() {
    register int sp asm("sp");
@@ -41,6 +42,17 @@ void page_fault_handler(uint64_t irq, uint64_t err) {
    }
    else {
       printk("page fault on %x with cr3 %x and error %x\n", j.i, getCR3(), err);
+   }
+
+}
+
+void sys_call_handler(uint64_t irq, uint64_t err, uint64_t sys_call_num) {
+   printk("here: %d\n", sys_call_num);
+   if (sys_call_num >= 30) {
+      printk("invalid sys call\n");
+   }
+   else {
+      ((sys_call_func)sys_impl[sys_call_num])();
    }
 
 }
@@ -174,7 +186,7 @@ uint64_t irq_c_table[256] = {
 (uint64_t) not_implemented_irq,
 (uint64_t) not_implemented_irq,
 (uint64_t) not_implemented_irq,
-(uint64_t) not_implemented_irq,
+(uint64_t) sys_call_handler, /*0x80*/
 (uint64_t) not_implemented_irq,
 (uint64_t) not_implemented_irq,
 (uint64_t) not_implemented_irq,
@@ -322,9 +334,9 @@ void keyboard_interrupt(void *irq, void *err) {
    IRQ_end_of_interrupt((uint64_t)irq - 0x20);
 }
 
-void irq_c_handler(uint64_t irq, uint64_t err) {
+void irq_c_handler(uint64_t irq, uint64_t err, uint64_t save) {
    /*printk("irq_c_handler\n");
    while(1){};*/
-   ((void (*)(void *,void*))irq_c_table[irq])((void *)irq, (void *) err);
+   ((void (*)(void *,void*, void*))irq_c_table[irq])((void *)irq, (void *) err, save);
 }
 

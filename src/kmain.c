@@ -9,6 +9,10 @@
 #include "virtual_allocation.h"
 #include "kmalloc.h"
 
+void sys_call_test(int unused, int unused2, int sys_call_num) {
+   asm("int $0x80");
+}
+
 int kmain(uint32_t ebx) {
    int test = 1;
    short test_short = 2;
@@ -40,9 +44,12 @@ int kmain(uint32_t ebx) {
 
    STI();
 
-   printk("%x\n", -5);
+   while(k){};
+   sys_call_test(0, 1, 5);
+   sys_call_test(6, 7, 30);
+   
 
-   page_frame_test = MMU_alloc_page();
+   /*page_frame_test = MMU_alloc_page();
    printk("%x\n", page_frame_test);
    memset(page_frame_test, 'g', PAGE_SIZE);
    for (i=0; i<PAGE_SIZE; i++) {
@@ -76,7 +83,7 @@ int kmain(uint32_t ebx) {
    kfree(page_frame_test);
 
    page_frame_test = kmalloc(1);
-   printk("%x\n", page_frame_test);
+   printk("%x\n", page_frame_test);*/
 
    /*pf alloc test
    page_frame_test = MMU_pf_alloc();
