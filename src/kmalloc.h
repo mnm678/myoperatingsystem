@@ -1,4 +1,5 @@
-#pragma once
+#ifndef KMALLOC
+#define KMALLOC
 
 #define sbrk MMU_alloc_pages
 #define BUF_SIZE 70
@@ -12,3 +13,5 @@
 void *kmalloc(size_t size);
 void *kcalloc(size_t nmemb, size_t size);
 void kfree(void *ptr);
+
+#endif

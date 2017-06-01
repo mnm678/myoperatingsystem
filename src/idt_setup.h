@@ -1,5 +1,4 @@
 
-#pragma once
 #ifndef IDT_SETUP
 #define IDT_SETUP
 

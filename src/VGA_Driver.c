@@ -4,6 +4,7 @@
 #define WIDTH 80
 #define HEIGHT 25
 
+
 typedef struct display_character {
    char character;
    uint8_t t_color:4;
@@ -12,6 +13,14 @@ typedef struct display_character {
 }__attribute__((packed)) display_character;
 
 int cursor = 0;
+
+int VGA_row_count() {
+   return HEIGHT;
+}
+
+int VGA_col_count() {
+   return WIDTH;
+}
 
 void next_line() {
    cursor = cursor + 80 - (cursor % 80);
@@ -69,3 +78,13 @@ extern void VGA_display_str(char *s) {
       temp++;
    }
 }
+
+void VGA_display_attr_char(int x, int y, char c, int fg, int bg) {
+   display_character *screen = (display_character *) START;
+   
+   int loc = y*WIDTH + x;
+   screen[loc].character = c;
+   screen[loc].t_color = fg;
+   screen[loc].bg_color = bg;
+}
+

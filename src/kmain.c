@@ -44,9 +44,11 @@ int kmain(uint32_t ebx) {
 
    STI();
 
-   while(k){};
    sys_call_test(0, 1, 5);
    sys_call_test(6, 7, 30);
+
+
+   setup_snakes(2);
    
 
    /*page_frame_test = MMU_alloc_page();
@@ -169,8 +171,7 @@ int kmain(uint32_t ebx) {
 
    k = 1;
    while(k) {
-      /*read_and_print();*/
-      
+      PROC_run();
    }
 
 }

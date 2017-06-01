@@ -5,6 +5,7 @@
 #include "PS2.h"
 #include "virtual_allocation.h"
 #include "sys_calls.h"
+#include "context_swap.h"
 
 void printSP() {
    register int sp asm("sp");
@@ -29,7 +30,6 @@ void page_fault_handler(uint64_t irq, uint64_t err) {
    union virt j;
    int k=1;
 
-   printk("page fault\n");
    /*while(k){};*/
 
    j.i = getCR2();
@@ -181,8 +181,8 @@ uint64_t irq_c_table[256] = {
 (uint64_t) not_implemented_irq,
 (uint64_t) not_implemented_irq,
 (uint64_t) not_implemented_irq,
-(uint64_t) not_implemented_irq,
-(uint64_t) not_implemented_irq,
+(uint64_t) yield_isr,/*yield, 0x7B*/
+(uint64_t) exit_isr, /*exit, 0x7C*/
 (uint64_t) not_implemented_irq,
 (uint64_t) not_implemented_irq,
 (uint64_t) not_implemented_irq,
@@ -320,7 +320,7 @@ void not_implemented_irq(void *irq, void *err) {
    int k = 1;
 
    printk("Unimplemented interrupt %lx: %lx", (uint64_t) irq, (uint64_t) err);
-   /*while(k){};*/
+   while(k){};
 }
 
 void keyboard_interrupt(void *irq, void *err) {

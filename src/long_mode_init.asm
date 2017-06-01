@@ -1,3 +1,5 @@
+extern cur_proc
+extern next_proc
 global long_mode_start
 
 global irq0_handler
@@ -278,6 +280,110 @@ long_mode_start:
     call kmain
     hlt
 
+context_switch:
+    ;from the stack
+    mov rax, [rsp+0]
+    mov [rbx+0], rax
+    mov rax, [rsp+8]
+    mov [rbx+8], rax
+    mov rax, [rsp+16]
+    mov [rbx+16], rax
+    mov rax, [rsp+24]
+    mov [rbx+24], rax
+    mov rax, [rsp+32]
+    mov [rbx+32], rax
+    mov rax, [rsp+40]
+    mov [rbx+40], rax
+    mov rax, [rsp+48]
+    mov [rbx+48], rax
+    mov rax, [rsp+56]
+    mov [rbx+56], rax
+
+    mov rax, [rsp+64]
+    mov [rbx+64], rax
+    mov rax, [rsp+72]
+    mov [rbx+72], rax
+    mov rax, [rsp+80]
+    mov [rbx+80], rax;
+    mov rax, [rsp+88]
+    mov [rbx+88], rax
+    mov rax, [rsp+96]
+    mov [rbx+96], rax
+    mov rax, [rsp+104]
+    mov [rbx+104], rax
+    mov rax, [rsp+112]
+    mov [rbx+112], rax
+
+    ;from the interrupt stack
+    mov rax, [rsp+120]
+    mov [rbx+120], rax
+    mov rax, [rsp+128]
+    mov [rbx+128], rax
+    mov rax, [rsp+136]
+    mov [rbx+136], rax
+    mov rax, [rsp+144]
+    mov [rbx+144], rax
+    mov rax, [rsp+152]
+    mov [rbx+152], rax
+
+    ;from registers
+    mov [rbx+160], ds
+    mov [rbx+168], es
+
+    ;cur_proc = next_proc
+    mov [cur_proc], rcx
+
+    ;set registers
+    mov es, [rcx+168]
+    mov ds, [rcx+160]
+
+    ;set interrupt stack
+    mov rax, [rcx+152]
+    mov [rsp+152], rax
+    mov rax, [rcx+144]
+    mov [rsp+144], rax
+    mov rax, [rcx+136]
+    mov [rsp+136], rax
+    mov rax, [rcx+128]
+    mov [rsp+128], rax
+    mov rax, [rcx+120]
+    mov [rsp+120], rax
+
+    ;set stack
+    mov rax, [rcx+112]
+    mov [rsp+112], rax
+    mov rax, [rcx+104]
+    mov [rsp+104], rax
+    mov rax, [rcx+96]
+    mov [rsp+96], rax
+    mov rax, [rcx+88]
+    mov [rsp+88], rax
+    mov rax, [rcx+80]
+    mov [rsp+80], rax
+    mov rax, [rcx+72]
+    mov [rsp+72], rax
+    mov rax, [rcx+64]
+    mov [rsp+64], rax
+
+    mov rax, [rcx+56]
+    mov [rsp+56], rax
+    mov rax, [rcx+48]
+    mov [rsp+48], rax
+    mov rax, [rcx+40]
+    mov [rsp+40], rax
+    mov rax, [rcx+32]
+    mov [rsp+32], rax
+    mov rax, [rcx+24]
+    mov [rsp+24], rax
+    mov rax, [rcx+16]
+    mov [rsp+16], rax
+    mov rax, [rcx+8]
+    mov [rsp+8], rax
+    mov rax, [rcx]
+    mov [rsp], rax
+
+    jmp end_context_switch
+
 common_irq_handler:
     push rsi
 error_irq_handler:
@@ -297,6 +403,13 @@ error_irq_handler:
     ;mov qword [0xb8000], 0x0D35
 ;iloop: jmp iloop
     call irq_c_handler
+    ;if cur_proc != next+proc
+    mov rcx, [next_proc]
+    mov rbx, [cur_proc]
+    cmp rcx, rbx
+    jne context_switch
+
+end_context_switch:
     pop r15
     pop r14
     pop r13

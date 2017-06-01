@@ -65,9 +65,13 @@ void initialize_stack(void *stack) {
    int i;
    union virt j;
    pt_entry *l1;
+   int size = STACK_SIZE/PAGE_SIZE;
 
-   for(i=0; i<STACK_SIZE/PAGE_SIZE; i++) {
-      j.i = i;
+   int k = 1;
+   /*while(k) {};*/
+
+   for(i=0; i < size; i++) {
+      j.i = (uint64_t) stack + (i*PAGE_SIZE);
       l1 = setup_pt(j.va, getCR3());
       /*mark as used*/
       l1[j.va.l1_ndx].avl =1;
@@ -83,12 +87,16 @@ void *add_kstack() {
       return -1;
    }
 
-   stack_count++;
    stack = stack_start + STACK_SIZE *stack_count;
+   stack_count++;
    initialize_stack(stack);
 
    /*stacks grow up*/
-   return stack + STACK_SIZE;
+   return stack + STACK_SIZE - PAGE_SIZE;
+}
+
+void free_stack(void* stack) {
+   /*TODO*/
 }
 
 uint64_t heap_bottom = 0;

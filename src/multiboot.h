@@ -1,4 +1,5 @@
-#pragma once
+#ifndef MULTIBOOT
+#define MULTIBOOT
 
 #define BASIC_MEM 4
 #define MEMORY_MAP 6
@@ -81,3 +82,5 @@ void *MMU_pf_calloc();
 
 /*free a page frame */
 void MMU_pf_free(void* pf);
+
+#endif

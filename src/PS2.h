@@ -1,3 +1,6 @@
+#ifndef PS2
+#define PS2
+
 #include <stdint-gcc.h>
 
 #define FIRST_INTERUPT (1<<0)
@@ -17,3 +20,5 @@ void read_and_print();
 
 uint8_t inb(uint16_t port);
 void outb(uint16_t port, uint8_t val);
+
+#endif

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef VIRTUAL_ALLOCATORH
+#define VIRTUAL_ALLOCATORH
 
 #include "multiboot.h"
 
@@ -47,3 +48,5 @@ void MMU_free_pages(int num);
 
 
 void setup_id_map(uint64_t phy_mem_size);
+
+#endif

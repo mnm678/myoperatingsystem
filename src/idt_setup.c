@@ -15,6 +15,7 @@ uint64_t asm_irq_handler_table[256] = {
 char gp_tss[4096];
 char df_tss[4096];
 char pf_tss[4096];
+char exit_tss[4096];
 
 /*initializes the pic to 0x20-0x2F*/
 void PIC_setup() {
@@ -120,6 +121,7 @@ void tss_setup() {
    TSS.IST1 = ((uint64_t)&gp_tss) + 4096 - 1;
    TSS.IST2 = ((uint64_t)&df_tss) + 4096 - 1;
    TSS.IST3 = ((uint64_t)&pf_tss) + 4096 - 1;
+   TSS.IST4 = ((uint64_t)&exit_tss) + 4096 - 1;
    TSS.ign = 0;
    TSS.RSP0 = 0;
    TSS.RSP1 = 0;
@@ -180,6 +182,10 @@ void idt_setup() {
       /*pf*/
       if (i == 14) {
          IDT_table[i].IST = 3;
+      }
+      /*exit*/
+      if (i == 0x7C) {
+         IDT_table[i].IST = 4;
       }
    }
 
