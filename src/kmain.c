@@ -48,7 +48,7 @@ int kmain(uint32_t ebx) {
    sys_call_test(6, 7, 30);
 
 
-   setup_snakes(2);
+   setup_snakes(1);
    
 
    /*page_frame_test = MMU_alloc_page();
@@ -122,8 +122,6 @@ int kmain(uint32_t ebx) {
    /*page_frame_test = MMU_pf_alloc();
    printk("%p\n", page_frame_test);*/
    /*memset(page_frame_test, 'g', 4096);*/
-
-   printk("done\n");
 
 
    /*printSP();*/

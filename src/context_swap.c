@@ -83,7 +83,12 @@ void PROC_reschedule() {
    }
 
    if (!sched_head) {
-      next_proc = mainProcPtr;
+      if (cur_proc) {
+         next_proc = cur_proc;
+      }
+      else {
+         next_proc = mainProcPtr;
+      }
       return;
    }
    next_proc = sched_head;
@@ -91,17 +96,22 @@ void PROC_reschedule() {
    sched_head = sched_head->sched_next;
 
    temp = sched_head;
-   /* one or 2 elements in sched_head?*/
-   while (temp) {
-      if (!temp->sched_next) {
-         if (cur_proc != mainProcPtr) {
-            temp->sched_next = cur_proc;
-            temp->sched_next->sched_next = 0;
+   if (!temp && cur_proc != mainProcPtr && cur_proc != 0) {
+      sched_head = cur_proc;
+      sched_head->sched_next = 0;
+   }
+   else {
+      while (temp) {
+         if (!temp->sched_next) {
+            if (cur_proc != mainProcPtr && cur_proc !=0) {
+               temp->sched_next = cur_proc;
+               temp->sched_next->sched_next = 0;
+            }
+            temp = 0;
          }
-         temp = 0;
-      }
-      else {
-         temp = temp->sched_next;
+         else {
+            temp = temp->sched_next;
+         }
       }
    }
 
@@ -131,8 +141,7 @@ void PROC_run() {
 void exit_isr(void *irq, void *err) {
    Process *temp;
    int k = 1;
-   while(k){};
-   printk("exit_isr\n");
+   /*while(k){};*/
 
    /*remove cur_proc from linked list*/
    temp = sched_head;
@@ -143,7 +152,7 @@ void exit_isr(void *irq, void *err) {
    else {
       while(temp) {
          if (temp->sched_next && temp->sched_next == cur_proc) {
-            cur_proc->sched_next = cur_proc->sched_next->sched_next;
+            temp->sched_next = temp->sched_next->sched_next;
          }
          temp = temp->sched_next;
       }
@@ -164,7 +173,7 @@ void exit_isr(void *irq, void *err) {
    }
 
    /*to prevent this process being rescheduled*/
-   cur_proc = mainProcPtr;
+   cur_proc = 0;
 
    PROC_reschedule();
 
