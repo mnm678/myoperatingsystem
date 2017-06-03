@@ -75,6 +75,7 @@ Process *PROC_create_kthread(kproc_t entry_point, void *arg) {
 struct Process *mainProcPtr = 0;
 void PROC_reschedule() {
    Process *temp;
+   Process *old_head = sched_head;
 
    int interrupts = are_interrupts_enabled();
 
@@ -83,12 +84,12 @@ void PROC_reschedule() {
    }
 
    if (!sched_head) {
-      if (cur_proc) {
+      /*if (cur_proc) {
          next_proc = cur_proc;
       }
-      else {
+      else {*/
          next_proc = mainProcPtr;
-      }
+      /*}*/
       return;
    }
    next_proc = sched_head;
@@ -96,17 +97,18 @@ void PROC_reschedule() {
    sched_head = sched_head->sched_next;
 
    temp = sched_head;
-   if (!temp && cur_proc != mainProcPtr && cur_proc != 0) {
-      sched_head = cur_proc;
+   /*if (!temp && cur_proc != mainProcPtr && cur_proc != 0) {*/
+   if (!temp) {
+      sched_head = old_head;
       sched_head->sched_next = 0;
    }
    else {
       while (temp) {
          if (!temp->sched_next) {
-            if (cur_proc != mainProcPtr && cur_proc !=0) {
-               temp->sched_next = cur_proc;
+            /*if (cur_proc != mainProcPtr && cur_proc !=0) {*/
+               temp->sched_next = old_head;
                temp->sched_next->sched_next = 0;
-            }
+            /*}*/
             temp = 0;
          }
          else {
@@ -166,7 +168,7 @@ void exit_isr(void *irq, void *err) {
    else {
       while(temp) {
          if (temp->next && temp->next==cur_proc) {
-            cur_proc->next = cur_proc->next->next;
+            temp->next = temp->next->next;
          }
          temp = temp->next;
       }
@@ -182,3 +184,92 @@ void exit_isr(void *irq, void *err) {
    kfree(cur_proc);
 }
 
+void unschedule_proc(Process *proc) {
+   Process *temp = sched_head;
+   if (sched_head == proc) {
+      sched_head = sched_head->sched_next;
+   }
+
+   while(temp) {
+      if (temp->sched_next == proc) {
+         temp->sched_next = temp->sched_next->sched_next;
+      }
+      temp = temp->sched_next;
+   }
+}
+
+void schedule_proc(Process *proc) {
+   Process *temp = sched_head;
+
+   if (!temp) {
+      sched_head = proc;
+      proc->sched_next = 0;
+      return;
+   }
+
+   while(temp) {
+      if (!temp->sched_next) {
+         temp->sched_next = proc;
+         proc->sched_next = 0;
+         return;
+      }
+      temp = temp->sched_next;
+
+   }
+}
+
+void append_proc(Process *proc, ProcessQueue **queue) {
+   ProcessQueue *new = kmalloc(sizeof(ProcessQueue));
+   new->proc = proc;
+   new->next = *queue;
+   *queue = new;
+}
+
+void PROC_block_on(ProcessQueue **queue, int enable_ints) {
+   int k=1;
+   /*while(k){};*/
+   /*if (!queue) {
+      if (enable_ints) {
+         STI();
+      }
+      yield();
+      return;
+   }*/
+
+   unschedule_proc(cur_proc);
+   append_proc(cur_proc, queue);
+   if (enable_ints) {
+      STI();
+   }
+   yield();
+}
+
+void PROC_unblock_head(ProcessQueue **queue) {
+   int interrupts;
+   if (interrupts = are_interrupts_enabled()) {
+      CLI();
+   }
+
+   schedule_proc((*queue)->proc);
+   *queue = (*queue)->next;
+
+   if (interrupts) {
+      STI();
+   }
+}
+
+void PROC_unblock_all(ProcessQueue **queue) {
+   int interrupts = are_interrupts_enabled();
+   if (interrupts) {
+      CLI();
+   }
+
+   while(*queue) {
+      schedule_proc((*queue)->proc);
+      *queue = (*queue)->next;
+   }
+
+   if (interrupts) {
+      STI();
+   }
+}

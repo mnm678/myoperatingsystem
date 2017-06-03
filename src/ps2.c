@@ -3,6 +3,7 @@
 
 #define NOT_IMPLEMENTED 1
 #define SHIFT 2
+#define SHIFT_UP 3
 
 int shifted = 0;
 
@@ -116,7 +117,7 @@ void initialize_keyboard() {
 
 }
 
-void convert_code(uint8_t resp) {
+char convert_code(uint8_t resp) {
    char cur;
    /*char scan_code_table[1000] = {0, NOT_IMPLEMENTED, 0, NOT_IMPLEMENTED,
    NOT_IMPLEMENTED, NOT_IMPLEMENTED, NOT_IMPLEMENTED, NOT_IMPLEMENTED,
@@ -187,38 +188,59 @@ void convert_code(uint8_t resp) {
       }
    }*/
 
+   
    if(resp == 0xAA || resp == 0xB6) {
       shifted--;
+      return -1;
    }
-   else if(resp < 0x3A){
-      cur = scan_code_table[resp];
+   else if (resp < 0x3A) {
+      if (scan_code_table[resp] == SHIFT) {
+         shifted++;
+         return -1;
+      }
+      else if (shifted > 0) {
+         return shifted_scan_code_table[resp];
+      }
+      else {
+         return scan_code_table[resp];
+      }
+   }
+   else {
+      return -1;
+   }
+}
+
+void print_char(char cur) {
+   if (cur == -1) {
+      return;
+   }
+   /*else if(resp < 0x3A){*/
       if (cur == 0) {
          printk("invalid scan code\n");
       }
       else if(cur == NOT_IMPLEMENTED) {
          printk("not implemented\n");
       }
-      else if (cur == SHIFT) {
-         shifted++;
-      }
       else {
-         if (shifted > 0) {
-            printk("%c", shifted_scan_code_table[resp]);
-         }
-         else{
-            printk("%c", cur);
-         }
+         printk("%c", cur);
       }
-   }
+   /*}*/
 
    /*printk("%x\n", resp);*/
 }
 
 void read_and_print() {
+   int k = 1;
    uint8_t resp;
-   /*while((inb(CMD) & OUT_STATUS) == 0) {
-   };*/
+   char key;
+   while((inb(CMD) & OUT_STATUS) == 0) {
+   };
    resp = inb(DATA);
 
-   convert_code(resp);
+   /*while(k){};*/
+
+   key = convert_code(resp);
+   if (key != -1){
+      print_char(key);
+   }
 }

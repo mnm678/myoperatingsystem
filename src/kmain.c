@@ -8,12 +8,14 @@
 #include <limits.h>
 #include "virtual_allocation.h"
 #include "kmalloc.h"
+#include "keyboard_driver.h"
 
 void sys_call_test(int unused, int unused2, int sys_call_num) {
    asm("int $0x80");
 }
 
 int kmain(uint32_t ebx) {
+   void *arg;
    int test = 1;
    short test_short = 2;
    unsigned short test_ushort = 100;
@@ -166,6 +168,9 @@ int kmain(uint32_t ebx) {
    /*while(k){};*/
    /*asm("int $0x8");
    printSP();*/
+
+   KBD_init();
+   PROC_create_kthread(KBD_input_loop, arg);
 
    k = 1;
    while(k) {

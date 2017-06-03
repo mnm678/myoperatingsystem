@@ -54,4 +54,14 @@ void yield_isr();
 void PROC_run();
 void exit_isr(void *irq, void *err);
 
+typedef struct ProcessQueue {
+   Process *proc;
+   struct ProcessQueue *next;
+} ProcessQueue;
+
+void PROC_block_on(ProcessQueue**, int enable_ints);
+void PROC_unblock_head(ProcessQueue**);
+void PROC_unblock_all(ProcessQueue**);
+
+
 #endif

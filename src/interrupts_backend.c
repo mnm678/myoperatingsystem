@@ -6,6 +6,7 @@
 #include "virtual_allocation.h"
 #include "sys_calls.h"
 #include "context_swap.h"
+#include "keyboard_driver.h"
 
 void printSP() {
    register int sp asm("sp");
@@ -91,7 +92,7 @@ uint64_t irq_c_table[256] = {
 (uint64_t) not_implemented_irq,
 (uint64_t) not_implemented_irq,
 (uint64_t) not_implemented_irq,
-(uint64_t) keyboard_interrupt,
+(uint64_t) kbd_isr,
 (uint64_t) not_implemented_irq,
 (uint64_t) not_implemented_irq,
 (uint64_t) serial_interrupt,
@@ -323,6 +324,7 @@ void not_implemented_irq(void *irq, void *err) {
    while(k){};
 }
 
+/*unused, see keyboard driver*/
 void keyboard_interrupt(void *irq, void *err) {
    int k = 1;
    /*printk("keyboard interrupt\n");*/
