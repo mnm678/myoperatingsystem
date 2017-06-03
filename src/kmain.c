@@ -35,12 +35,6 @@ int kmain(uint32_t ebx) {
    VGA_clear();
    serial_setup();
 
-   /*while(1) {
-      printk("%d\n",pic_get_irr());
-      printk("%d\n",pic_get_isr());
-   }*/
-
-
    phy_mem_size = findMemory(ebx);
    setup_id_map(phy_mem_size);
 
@@ -51,123 +45,6 @@ int kmain(uint32_t ebx) {
 
 
    setup_snakes(1);
-   
-
-   /*page_frame_test = MMU_alloc_page();
-   printk("%x\n", page_frame_test);
-   memset(page_frame_test, 'g', PAGE_SIZE);
-   for (i=0; i<PAGE_SIZE; i++) {
-      if (((char*)page_frame_test)[i] != 'g') {
-         printk("broken\n");
-      }
-   }
-
-   MMU_free_page(page_frame_test);
-
-   for (i=0; i < 10000; i++) {
-      page_frame_test = MMU_alloc_page();
-   }
-
-   page_frame_test = MMU_alloc_page();
-   printk("%x\n", page_frame_test);
-
-   page_frame_test = kmalloc(1);
-   printk("%x\n", page_frame_test);
-
-   page_frame_test = kmalloc(1);
-   printk("%x\n", page_frame_test);
-   
-   page_frame_test = kmalloc(100);
-   memset(page_frame_test, 0, 100);
-   printk("%x\n", page_frame_test);
-
-   page_frame_test = kmalloc(1);
-   printk("%x\n", page_frame_test);
-
-   kfree(page_frame_test);
-
-   page_frame_test = kmalloc(1);
-   printk("%x\n", page_frame_test);*/
-
-   /*pf alloc test
-   page_frame_test = MMU_pf_alloc();
-   printk("%x\n", page_frame_test);
-
-   page_frame_test2 = MMU_pf_alloc();
-   printk("%p\n", page_frame_test2);
-
-   page_frame_test = MMU_pf_alloc();
-   printk("%p\n", page_frame_test);
-
-   MMU_pf_free(page_frame_test);
-   MMU_pf_free(page_frame_test2);
-
-   page_frame_test = MMU_pf_alloc();
-   printk("%p\n", page_frame_test);
-
-   page_frame_test = MMU_pf_alloc();
-   printk("%p\n", page_frame_test);*/
-
-   /*i=0;
-   while(page_frame_test != -1) {
-      memset(page_frame_test, '0' + (i%74), 4096);
-
-      for (j=0; j < 4096; j++){
-         if (((char *)page_frame_test)[j] != '0'+ (i%74)) {
-            printk("broken: %c\n", ((char*)page_frame_test)[j]);
-         }
-      }
-
-      page_frame_test = MMU_pf_alloc();
-      i++;
-   }*/
-   /*page_frame_test = MMU_pf_alloc();
-   printk("%p\n", page_frame_test);*/
-   /*memset(page_frame_test, 'g', 4096);*/
-
-
-   /*printSP();*/
-   /*serial_write_char('a');
-   serial_write_char('\n');
-   serial_write_char('a');
-   serial_write_char('\n');
-   serial_write("hello, world\n", 13);*/
-   /*irq20_handler();*/
-   /*k=1;
-   while(k){};*/
-   /*printk("This is a very long string. Hopefully it is long enough.\n");
-
-   printk("hello\n");
-   printk("%d\n", 4);
-   printk("%d\n", -54921);
-   printk("%u\n", 45);
-   printk("%u\n", -45);
-   printk("%x\n", 5);
-   printk("%x\n", 12);
-   printk("%x\n", 17);
-   printk("50%%\n");
-   printk("%c\n", 'm');
-   printk("%p\n", &test);
-   printk("%hd\n", test_short);
-   printk("%hu\n", test_ushort);
-   printk("%hx\n", test_short);
-   printk("%ld\n", test_long);
-   printk("%lu\n", test_ulong);
-   printk("%lx\n", test_long);
-   printk("%ld\n", test_long);
-   printk("%lu\n", test_ulong);
-   printk("%lx\n", test_long);
-   printk("%s", "TEST\n");
-
-   printk("goodbye\n");*/
-
-   /*initialize_ps2();
-   initialize_keyboard();*/
-   /*asm("int $0x21");*/
-   k=1;
-   /*while(k){};*/
-   /*asm("int $0x8");
-   printSP();*/
 
    KBD_init();
    PROC_create_kthread(KBD_input_loop, arg);

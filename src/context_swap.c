@@ -12,7 +12,6 @@ Process *sched_head = 0;
 int proc_num = 0;
 
 Process *PROC_create_kthread(kproc_t entry_point, void *arg) {
-   int k=1;
    Process *proc = kmalloc(sizeof(Process));
    Process *temp;
 
@@ -27,8 +26,6 @@ Process *PROC_create_kthread(kproc_t entry_point, void *arg) {
    proc->rsp = (uint64_t)add_kstack();
    proc->ss = proc->ds = proc->es = 0;
    proc->next = proc->sched_next = 0;
-
-   /*while(k){};*/
 
    proc->pid = proc_num++;
    *((uint64_t*)(proc->rsp))=(uint64_t)&kexit;
@@ -84,12 +81,7 @@ void PROC_reschedule() {
    }
 
    if (!sched_head) {
-      /*if (cur_proc) {
-         next_proc = cur_proc;
-      }
-      else {*/
-         next_proc = mainProcPtr;
-      /*}*/
+      next_proc = mainProcPtr;
       return;
    }
    next_proc = sched_head;
@@ -97,7 +89,6 @@ void PROC_reschedule() {
    sched_head = sched_head->sched_next;
 
    temp = sched_head;
-   /*if (!temp && cur_proc != mainProcPtr && cur_proc != 0) {*/
    if (!temp) {
       sched_head = old_head;
       sched_head->sched_next = 0;
@@ -105,10 +96,8 @@ void PROC_reschedule() {
    else {
       while (temp) {
          if (!temp->sched_next) {
-            /*if (cur_proc != mainProcPtr && cur_proc !=0) {*/
-               temp->sched_next = old_head;
-               temp->sched_next->sched_next = 0;
-            /*}*/
+            temp->sched_next = old_head;
+            temp->sched_next->sched_next = 0;
             temp = 0;
          }
          else {
@@ -127,8 +116,6 @@ void yield() {
 }
 
 void yield_isr() {
-   int k = 1;
-   /*while(k){};*/
    PROC_reschedule();
 }
 
@@ -142,8 +129,6 @@ void PROC_run() {
 
 void exit_isr(void *irq, void *err) {
    Process *temp;
-   int k = 1;
-   /*while(k){};*/
 
    /*remove cur_proc from linked list*/
    temp = sched_head;
@@ -173,9 +158,6 @@ void exit_isr(void *irq, void *err) {
          temp = temp->next;
       }
    }
-
-   /*to prevent this process being rescheduled*/
-   cur_proc = 0;
 
    PROC_reschedule();
 
@@ -226,16 +208,6 @@ void append_proc(Process *proc, ProcessQueue **queue) {
 }
 
 void PROC_block_on(ProcessQueue **queue, int enable_ints) {
-   int k=1;
-   /*while(k){};*/
-   /*if (!queue) {
-      if (enable_ints) {
-         STI();
-      }
-      yield();
-      return;
-   }*/
-
    unschedule_proc(cur_proc);
    append_proc(cur_proc, queue);
    if (enable_ints) {

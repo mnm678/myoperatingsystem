@@ -28,8 +28,6 @@ void KBD_input_loop(void *arg) {
 }
 
 void KBD_read() {
-   int k=1;
-   /*while(k);*/
    CLI();
    while(kbd->read == kbd->write) {
       printk("unblocked\n");
@@ -55,8 +53,6 @@ char read_scancode() {
 }
 
 void kbd_isr(uint64_t irq, uint64_t err) {
-   int k=1;
-   /*while(k){};*/
    char key = read_scancode();
    if (key!= -1) {
       add_to_buffer(key);
