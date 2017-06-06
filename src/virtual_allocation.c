@@ -107,6 +107,9 @@ void *MMU_alloc_page() {
    union virt j;
    pt_entry *l1;
 
+   int k = 1;
+   /*while(k){};*/
+
    
    if (heap_bottom == 0) {
       heap_bottom = stack_start + STACK_SIZE*MAX_STACK;

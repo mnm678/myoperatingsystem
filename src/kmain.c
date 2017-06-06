@@ -39,6 +39,7 @@ int kmain(uint32_t ebx) {
    setup_id_map(phy_mem_size);
 
    STI();
+   ata_init();
 
    sys_call_test(0, 1, 5);
    sys_call_test(6, 7, 30);
