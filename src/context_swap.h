@@ -2,6 +2,7 @@
 #define CONTEXT_SWAP
 
 #include <stdint-gcc.h>
+#include "interrupts.h"
 #include "kmalloc.h"
 #include "virtual_allocation.h"
 

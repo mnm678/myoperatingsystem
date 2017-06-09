@@ -218,7 +218,7 @@ void PROC_block_on(ProcessQueue **queue, int enable_ints) {
 
 void PROC_unblock_head(ProcessQueue **queue) {
    int interrupts;
-   if (interrupts = are_interrupts_enabled()) {
+   if ((interrupts = are_interrupts_enabled())) {
       CLI();
    }
 

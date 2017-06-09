@@ -42,13 +42,13 @@ void page_fault_handler(uint64_t irq, uint64_t err) {
       l1[j.va.l1_ndx].p = 1;
    }
    else {
-      printk("page fault on %x with cr3 %x and error %x\n", j.i, getCR3(), err);
+      printk("page fault on %lx with cr3 %lx and error %lx\n", j.i, getCR3(), err);
    }
 
 }
 
 void sys_call_handler(uint64_t irq, uint64_t err, uint64_t sys_call_num) {
-   printk("here: %d\n", sys_call_num);
+   printk("here: %lu\n", sys_call_num);
    if (sys_call_num >= 30) {
       printk("invalid sys call\n");
    }
@@ -339,6 +339,6 @@ void keyboard_interrupt(void *irq, void *err) {
 void irq_c_handler(uint64_t irq, uint64_t err, uint64_t save) {
    /*printk("irq_c_handler\n");
    while(1){};*/
-   ((void (*)(void *,void*, void*))irq_c_table[irq])((void *)irq, (void *) err, save);
+   ((void (*)(void *,void*, void*))irq_c_table[irq])((void *)irq, (void *) err, (void *)save);
 }
 

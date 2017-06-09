@@ -2,9 +2,12 @@
 #define ATA_DRIVER
 
 #include "block_device.h"
+#include "PS2.h"
 #include "kmalloc.h"
 #include <stdint-gcc.h>
 #include "context_swap.h"
+#include "interrupts.h"
+#include "idt_setup.h"
 
 typedef struct ATABlockDev{
    struct BlockDev dev;
@@ -32,7 +35,7 @@ void ata_isr(uint64_t irq, uint64_t err);
 
 int ata_read_block(BlockDev *a, uint64_t blk_num, void *dst);
 
-BlockDev *ata_init();
+ATABlockDev *ata_init();
 
 typedef struct ReadQueue {
    ATABlockDev *dev;

@@ -122,7 +122,7 @@ uint64_t findMemory(uint64_t ebx) {
       temp_head->next = prev_head->next;
       temp_head = (memory_section*)temp_head->next;
    }
-   return page_align(tot_size);
+   return page_align((void *)tot_size);
 }
 
 free_entry *free_list_head = (void *)-1;

@@ -1,21 +1,25 @@
 #include "ata_driver.h"
 
+#define ERR_RET ((void *) -1)
+
 ProcessQueue *ata_blocked =0;
 ReadQueue *ata_read_head = 0;
 
 void ata_handler(int read) {
    int i;
+   int k=1;
    ReadQueue *temp;
    uint8_t resp = inb(ATA_PRIMARY_BASE + ATA_COMMAND_IO_OFFSET);
-   uint8_t mask;
+   uint64_t mask;
    uint8_t cur;
    uint16_t sectorcount = 1;
    uint64_t LBA;
    ATABlockDev *this;
-   int sectorSize = 512;
+   int sectorSize = 256;
    
    if (ata_read_head && !read && (resp & 8)) {
       /*read*/
+      this = ata_read_head->dev;
       for(i=0; i < sectorSize; i++) {
          ((uint16_t *)ata_read_head->dst)[i] = inw(this->ata_base);
       }
@@ -54,6 +58,19 @@ void ata_handler(int read) {
 
       outb(this->ata_base + ATA_COMMAND_IO_OFFSET, 0x24);
 
+      /*polling for testing*/
+
+      /*while(resp = inb(ATA_PRIMARY_BASE + ATA_COMMAND_IO_OFFSET) & 0x80) {};
+
+
+      for(i=0; i < sectorSize; i++) {
+         ((uint16_t *)ata_read_head->dst)[i] = inw(this->ata_base);
+      }
+
+      temp = ata_read_head;
+      ata_read_head = ata_read_head->next;
+      kfree(temp);*/
+
    }
 
 }
@@ -69,9 +86,7 @@ void ata_isr(uint64_t irq, uint64_t err) {
 
    IRQ_end_of_interrupt(14);
 
-   if (resp != 0x80 && !(resp & 1)) {
-      PROC_unblock_all(&ata_blocked);
-   }
+   PROC_unblock_all(&ata_blocked);
 }
 
 
@@ -79,7 +94,7 @@ void ata_add_to_queue(BlockDev *dev, uint64_t lba, void *dst) {
    ReadQueue *temp;
    if (!ata_read_head) {
       ata_read_head = kmalloc(sizeof(ReadQueue));
-      ata_read_head->dev = dev;
+      ata_read_head->dev = (ATABlockDev*)dev;
       ata_read_head->next = 0;
       ata_read_head->dst = dst;
       ata_read_head->lba = lba;
@@ -90,7 +105,7 @@ void ata_add_to_queue(BlockDev *dev, uint64_t lba, void *dst) {
    while (temp) {
       if (temp->next == 0) {
          temp->next = kmalloc(sizeof(ReadQueue));
-         temp->next->dev = dev;
+         temp->next->dev = (ATABlockDev*)dev;
          temp->next->lba = lba;
          temp->next->dst = dst;
          temp->next->next = 0;
@@ -111,18 +126,20 @@ int ata_read_block(BlockDev *a, uint64_t blk_num, void *dst) {
 
    /*while(k){};*/
    printk("ata_read\n");
-   ata_add_to_queue(this, LBA, dst);
+   CLI();
+   ata_add_to_queue((BlockDev *)this, LBA, dst);
 
    ata_handler(1);
 
-   PROC_block_on(&ata_blocked, 0);
+   PROC_block_on(&ata_blocked, 1);
 
    k=1;
    /*while(k){};*/
+   return blk_num;
 }
 
 
-BlockDev *probe_ata(uint16_t base, uint16_t master, uint8_t slave, uint8_t irq, char *name) {
+ATABlockDev *probe_ata(uint16_t base, uint16_t master, uint8_t slave, uint8_t irq, char *name) {
    ATABlockDev *ret;
    int readCnt;
    uint16_t resp;
@@ -159,7 +176,7 @@ BlockDev *probe_ata(uint16_t base, uint16_t master, uint8_t slave, uint8_t irq, 
    }
 
    if(resp == 0) {
-      return -1;
+      return ERR_RET;
    }
 
    while (inb(base + ATA_COMMAND_IO_OFFSET) & 0x80) {
@@ -167,12 +184,12 @@ BlockDev *probe_ata(uint16_t base, uint16_t master, uint8_t slave, uint8_t irq, 
 
    resp = inb(base + ATA_LBAMID_OFFSET);
    if( resp != 0) {
-      return -1;
+      return ERR_RET;
    }
 
    resp = inb(base + ATA_LBAHI_OFFSET);
    if (resp != 0) {
-      return -1;
+      return ERR_RET;
    }
 
    while (!(resp = inb(base + ATA_COMMAND_IO_OFFSET) & 8) && !(resp & 1)) {};
@@ -184,13 +201,13 @@ BlockDev *probe_ata(uint16_t base, uint16_t master, uint8_t slave, uint8_t irq, 
 
       if (resp == 0x14 && resp2 == 0xEB) {
          printk("ATAPI drive unsupported\n");
-         return -1;
+         return ERR_RET;
          /*ATAPI*/
       }
 
       if (resp == 0x3c && resp2 == 0xc3) {
          printk("SATA drive unsupported\n");
-         return -1;
+         return ERR_RET;
          /*SATA*/
       }
    }
@@ -201,7 +218,7 @@ BlockDev *probe_ata(uint16_t base, uint16_t master, uint8_t slave, uint8_t irq, 
 
    if (! (buff[83] & (1 <<10))) {
       /*LBA48 not supported*/
-      return -1;
+      return ERR_RET;
    }
 
    /*allow interrupts*/
@@ -221,9 +238,10 @@ BlockDev *probe_ata(uint16_t base, uint16_t master, uint8_t slave, uint8_t irq, 
    return ret;
 }
 
-BlockDev *ata_init() {
-   BlockDev *dev = probe_ata(ATA_PRIMARY_BASE, ATA_SECONDARY_CONTROL, 0, ATA_PRIMARY_IRQ, "test");
+ATABlockDev *ata_init() {
+   ATABlockDev *dev = probe_ata(ATA_PRIMARY_BASE, ATA_SECONDARY_CONTROL, 0, ATA_PRIMARY_IRQ, "test");
 
    IRQ_clear_mask(14);
 
+   return dev;
 }

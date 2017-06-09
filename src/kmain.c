@@ -10,17 +10,22 @@
 #include "kmalloc.h"
 #include "keyboard_driver.h"
 #include "block_device.h"
+#include "ata_driver.h"
 
 void sys_call_test(int unused, int unused2, int sys_call_num) {
    asm("int $0x80");
 }
 
-void ata_test(BlockDev *drive) {
-   char *buff;
-   buff = kmalloc(512 * sizeof(char));
-   ata_read_block(drive, 0, buff);
+void ata_test(void *arg) {
+   uint8_t *buff;
+   int k=1;
 
-   printk("ata: %x", buff[0]);
+   ATABlockDev *drive = ata_init();
+
+   buff = kmalloc(512 * sizeof(char));
+   ata_read_block((BlockDev*)drive, 0, buff);
+
+   printk("ata: %x\n", buff[510]);
 }
 
 void halt_func(void *arg) {
@@ -55,11 +60,10 @@ int kmain(uint32_t ebx) {
 
    phy_mem_size = findMemory(ebx);
    setup_id_map(phy_mem_size);
-   drive = ata_init();
 
    STI();
 
-   PROC_create_kthread(ata_test, drive);
+   PROC_create_kthread(ata_test, arg);
 
    /*sys_call_test(0, 1, 5);
    sys_call_test(6, 7, 30);*/
