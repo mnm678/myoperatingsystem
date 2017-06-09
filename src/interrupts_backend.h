@@ -3,6 +3,7 @@
 
 #include <stdint-gcc.h>
 #include "printk.h"
+#include "ata_driver.h"
 
 void not_implemented_irq(void *, void *);
 void keyboard_interrupt(void *, void *);

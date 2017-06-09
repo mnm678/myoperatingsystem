@@ -30,7 +30,6 @@ void KBD_input_loop(void *arg) {
 void KBD_read() {
    CLI();
    while(kbd->read == kbd->write) {
-      printk("unblocked\n");
       PROC_block_on(&kbd->blocked, 1);
       CLI();
    }

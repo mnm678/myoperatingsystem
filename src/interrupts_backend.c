@@ -105,7 +105,7 @@ uint64_t irq_c_table[256] = {
 (uint64_t) not_implemented_irq,
 (uint64_t) not_implemented_irq,
 (uint64_t) not_implemented_irq,
-(uint64_t) not_implemented_irq,
+(uint64_t) ata_isr,
 (uint64_t) not_implemented_irq,
 (uint64_t) not_implemented_irq,
 (uint64_t) not_implemented_irq,

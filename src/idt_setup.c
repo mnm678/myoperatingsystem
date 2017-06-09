@@ -200,16 +200,14 @@ void IRQ_set_all_masks() {
    uint16_t port;
    uint8_t value;
 
-   for(i=0; i<8; i++) {
-      if (i != 2) {
-         port = PIC1_DATA;
-         value = inb(port) | 0xFF;
-         outb(port, value);
-      }
-      port = PIC2_DATA;
-      value = inb(port) | 0xFF;
-      outb(port, value);
-   }
+   port = PIC1_DATA;
+   value = inb(port) | 0xFF;
+   outb(port, value);
+   port = PIC2_DATA;
+   value = inb(port) | 0xFF;
+   outb(port, value);
+
+   IRQ_clear_mask(2);
 }
 
 void IRQ_set_mask(unsigned char num) {
@@ -257,7 +255,7 @@ uint16_t pic_get_isr() {
 }
 
 void IRQ_end_of_interrupt(int irq) {
-   if(irq < 8) {
+   if(irq >= 8) {
       outb(PIC2, 0x20);
    }
    outb(PIC1, 0x20);
