@@ -1,7 +1,5 @@
 #include "ata_driver.h"
 
-#define ERR_RET ((void *) -1)
-
 ProcessQueue *ata_blocked =0;
 ReadQueue *ata_read_head = 0;
 

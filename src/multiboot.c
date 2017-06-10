@@ -122,7 +122,7 @@ uint64_t findMemory(uint64_t ebx) {
       temp_head->next = prev_head->next;
       temp_head = (memory_section*)temp_head->next;
    }
-   return page_align((void *)tot_size);
+   return (uint64_t) page_align((void *)tot_size);
 }
 
 free_entry *free_list_head = (void *)-1;
@@ -188,7 +188,7 @@ void *MMU_pf_alloc() {
 
 void *MMU_pf_calloc() {
    void *temp = MMU_pf_alloc();
-   if (temp == -1) {
+   if (temp == ERR_RET) {
       /*out of memory, do something*/
       while(1) {};
    }

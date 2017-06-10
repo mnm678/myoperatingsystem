@@ -2,6 +2,7 @@
 #define KEYBOARD_DRIVER
 
 #include "context_swap.h"
+#include "idt_setup.h"
 #include "PS2.h"
 #define KBD_BUF_SIZE 1024
 

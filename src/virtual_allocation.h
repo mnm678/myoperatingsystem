@@ -2,6 +2,7 @@
 #define VIRTUAL_ALLOCATORH
 
 #include "multiboot.h"
+#include "types.h"
 
 typedef struct CR3_entry {
    uint64_t res:12;

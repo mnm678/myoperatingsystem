@@ -128,7 +128,7 @@ void tss_setup() {
    TSS.RSP2 = 0;
    TSS.ign_2 = 0;
 
-   TSS_descriptor = gdt64 + 2;
+   TSS_descriptor = (tss_descriptor*)(gdt64 + 2);
 
    TSS_descriptor->base_addr_1 = ((uint64_t)(&TSS)) & mask1;
    TSS_descriptor->base_addr_2 = (((uint64_t)(&TSS)) & mask2) >> 16;

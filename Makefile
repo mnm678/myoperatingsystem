@@ -1,7 +1,7 @@
 arch ?= x86_64
 kernel := build/kernel-$(arch).bin
 img := build/os.img
-cc := x86_64-elf-gcc-6.3.0 -g -Wall -mno-red-zone
+cc := x86_64-elf-gcc-6.3.0 -g -Wall -mno-red-zone -Wno-unused-variable -Wno-unused-but-set-variable
 
 linker_script := src/linker.ld
 grub_cfg := src/grub.cfg

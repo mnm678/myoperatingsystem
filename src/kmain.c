@@ -36,7 +36,7 @@ void halt_func(void *arg) {
 }
 
 int kmain(uint32_t ebx) {
-   void *arg;
+   void *arg = 0;
    int test = 1;
    short test_short = 2;
    unsigned short test_ushort = 100;
@@ -80,4 +80,5 @@ int kmain(uint32_t ebx) {
       PROC_run();
    }
 
+   return 0;
 }

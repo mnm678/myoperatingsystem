@@ -6,6 +6,7 @@
 #define ELF_SYM 9
 #include <stdint-gcc.h>
 #include "printk.h"
+#include "types.h"
 
 /*in kilobytes*/
 /*uint64_t lowerMem = 0;

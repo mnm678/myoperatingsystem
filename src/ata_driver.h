@@ -8,6 +8,7 @@
 #include "context_swap.h"
 #include "interrupts.h"
 #include "idt_setup.h"
+#include "types.h"
 
 typedef struct ATABlockDev{
    struct BlockDev dev;
