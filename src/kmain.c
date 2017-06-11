@@ -11,6 +11,7 @@
 #include "keyboard_driver.h"
 #include "block_device.h"
 #include "ata_driver.h"
+#include "vfs.h"
 
 void sys_call_test(int unused, int unused2, int sys_call_num) {
    asm("int $0x80");
@@ -22,10 +23,14 @@ void ata_test(void *arg) {
 
    ATABlockDev *drive = ata_init();
 
-   buff = kmalloc(512 * sizeof(char));
+   /*buff = kmalloc(512 * sizeof(char));
    ata_read_block((BlockDev*)drive, 0, buff);
 
-   printk("ata: %x\n", buff[510]);
+   printk("ata: %x\n", buff[510]);*/
+
+   read_mbr(drive);
+
+   kexit();
 }
 
 void halt_func(void *arg) {

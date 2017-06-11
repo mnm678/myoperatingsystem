@@ -78,7 +78,6 @@ void ata_isr(uint64_t irq, uint64_t err) {
    uint8_t resp;
    int k = 1;
    /*while(k){};*/
-   printk("ata_isr\n");
 
    ata_handler(0);
 
@@ -123,7 +122,6 @@ int ata_read_block(BlockDev *a, uint64_t blk_num, void *dst) {
    uint64_t LBA = blk_num;
 
    /*while(k){};*/
-   printk("ata_read\n");
    CLI();
    ata_add_to_queue((BlockDev *)this, LBA, dst);
 
