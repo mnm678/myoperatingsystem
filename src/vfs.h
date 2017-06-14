@@ -3,27 +3,43 @@
 
 #include "block_device.h"
 #include "printk.h"
+#include "types.h"
 
 typedef struct SuperBlock *(*FS_detect_cb)(BlockDev *dev);
 extern void FS_register(FS_detect_cb probe);
 
-typedef struct MBR_Partition {
-   uint8_t status;
-   uint8_t first_sector_head;
-   uint8_t first_sector_high;
-   uint8_t first_sector_low;
-   uint8_t part_type;
-   uint8_t last_sector_head;
-   uint8_t last_sector_high;
-   uint8_t last_sector_low;
-   uint32_t first_sector_lba;
-   uint32_t sectors_in_part;
-}__attribute__ ((packed)) MBR_Partition;
+typedef struct File {
+   struct Inode *inode;
+   size_t offset;
+   int (*read)(struct File*, char *dst, size_t len);
+   int (*write)(struct File*, char *src, size_t len);
+   int (*lseek)(struct File*, size_t off);
+   int (*close)(struct File**);
+} File;
 
-typedef struct MBR {
-   uint8_t bootstrap[446];
-   MBR_Partition parts[4];
-   uint16_t signature;
-}__attribute__ ((packed)) MBR;
+typedef int (*readdir_cb)(const char *name, uint64_t inode_num, void *);
+
+typedef struct Inode {
+   size_t size;
+   /*struct timeval mod_time, acc_time, create_time these need timing interrupt*/
+   mode_t st_mode;
+   uid_t uid;
+   gid_t gid;
+   uint64_t ino_num;
+   File* (*open)(struct Inode*);
+   readdir_cb cb;
+   int (*read_dir)(struct Inode*, readdir_cb, void *);
+   int (*unlink)(struct Inode*, const char * name);
+   void (*free)(struct Inode **);
+} Inode;
+
+typedef struct SuperBlock {
+   Inode *root_inode;
+   Inode *(*read_inode)(struct SuperBlock*, uint64_t inode);
+   char *name;
+   char *type;
+   int (*sync_fs)(struct SuperBlock*);
+   void (*put_super)(struct SuperBlock*);
+} SuperBlock;
 
 #endif
