@@ -82,7 +82,6 @@ typedef struct FAT_SuperBlock{
 
 typedef struct FAT_Inode {
    Inode in;
-   uint64_t size;
 } FAT_Inode;
 
 typedef struct FATDirEnt {
@@ -113,7 +112,23 @@ typedef struct FATLongDirEnt {
 
 SuperBlock read_mbr(BlockDev *);
 
+typedef struct readdir_arg {
+   Inode *inode;
+   char *name;
+   int directory;
+} readdir_arg;
 
+typedef struct Path {
+   char *cur;
+   struct Path *next;
+} Path;
 
+int read_test();
+FAT_Inode *find_file(Path *head);
+
+int FAT_readdir_cb(const char *name, uint64_t inode_num, void *);
+int FAT_read_dir(Inode *inode, readdir_cb cb, void *);
+
+int FAT_list_all();
 
 #endif

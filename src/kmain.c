@@ -35,6 +35,11 @@ void ata_test(void *arg) {
 
    sb.root_inode->read_dir(sb.root_inode, sb.root_inode->cb, arg_sb);
 
+   printk("readdir test\n");
+   read_test();
+   printk("list all\n");
+   FAT_list_all();
+
    kexit();
 }
 

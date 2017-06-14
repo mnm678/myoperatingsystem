@@ -12,6 +12,20 @@ extern size_t strlen(char *s) {
 
    return count;
 }
+
+int strcmp(const char *s1, const char *s2) {
+   int i;
+   int res;
+   if ((res = strlen(s1) - strlen(s2))) {
+      return res;
+   }  
+   for (i=0; i<strlen(s1); i++) {
+      if ((res = s1[i] - s2[i])) {
+         return res;
+      }
+   }
+   return 0;
+}
 /*void *memcpy(void *dest, void *src, size_t n) {
 */
 

@@ -30,8 +30,10 @@ img: $(img)
 
 $(img): $(kernel) $(grub_cfg)
 	@mkdir -p build/isofiles/boot/grub
+	@mkdir -p build/isofiles/test
 	@cp $(kernel) build/isofiles/boot/kernel.bin
 	@cp $(grub_cfg) build/isofiles/boot/grub
+	cp testfile build/isofiles/test
 	@dd if=/dev/zero of=$(img) bs=512 count=32768
 	@parted $(img) mklabel msdos
 	@parted $(img) mkpart primary fat32 2048s 30720s
