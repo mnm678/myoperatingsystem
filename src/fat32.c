@@ -11,17 +11,18 @@ uint32_t next_cluster(uint32_t curcluster) {
    int k=0;
    while(k){};
 
-   fsb->dev->read_block(fsb->dev, fsb->start_offset + fsb->num_reserved_sectors + ((cluster * 4)/512), buff);
+   fsb->dev->read_block(fsb->dev, fsb->start_offset + fsb->num_reserved_sectors + ((cluster *4)/512), buff);
 
-   cluster = buff[(cluster *4)%512];
+   cluster = *((uint32_t *)&buff[(cluster *4)%512]) & 0xFFFFFFF;
 
    return cluster;
 }
 
 int FAT_read(File *file, char *dst, size_t len) {
    uint64_t cluster = file->inode->ino_num;
-   int32_t size = len;
+   int64_t size = len;
    uint32_t offset;
+   printk("len: %d\n", len);
 
    while(size > 0) {
       offset = file->offset;
@@ -32,7 +33,9 @@ int FAT_read(File *file, char *dst, size_t len) {
          file->offset += size;
       }
       else {
-         file->offset += 512;
+         file->offset = fsb->num_reserved_sectors + fsb->sectors_per_fat * fsb->num_fats + fsb->sectors_per_cluster *(cluster-2);
+         file->offset += fsb->start_offset;
+         printk("sectors peroffset: %d\n", fsb->sectors_per_cluster);
       }
       size -= 512;
    }
@@ -63,8 +66,8 @@ File *FAT_open(struct Inode *inode) {
 }
 
 int read_test() {
-   char *buff = kmalloc(50);
-   memset(buff, 0, 50);
+   char *buff = kmalloc(3000);
+   memset(buff, 0, 3000);
    File *f;
    Inode *node;
    Path *head = kmalloc(sizeof(Path));
@@ -79,7 +82,7 @@ int read_test() {
    node = find_file(head);
 
    f= node->open(node);
-   f->read(f, buff, 50);
+   f->read(f, buff, node->size);
 
    printk(buff);
 
@@ -151,7 +154,7 @@ int FAT_read_dir(Inode *inode, readdir_cb cb, void *arg) {
    char *name = 0;
    uint16_t order;
    FAT_Inode *new_inode;
-   int k=1;
+   int k=0;
    readdir_arg *read_arg = (readdir_arg *)arg;
    /*while(k){};*/
 

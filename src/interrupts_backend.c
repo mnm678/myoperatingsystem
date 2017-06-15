@@ -47,13 +47,14 @@ void page_fault_handler(uint64_t irq, uint64_t err) {
 
 }
 
-void sys_call_handler(uint64_t irq, uint64_t err, uint64_t sys_call_num) {
-   printk("here: %lu\n", sys_call_num);
+void sys_call_handler(uint64_t irq, uint64_t err, uint64_t sys_call_num, void *arg) {
+   int k=1;
+   /*while(k){};*/
    if (sys_call_num >= 30) {
       printk("invalid sys call\n");
    }
    else {
-      ((sys_call_func)sys_impl[sys_call_num])();
+      ((sys_call_func)sys_impl[sys_call_num])(err);
    }
 
 }

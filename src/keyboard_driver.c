@@ -27,6 +27,18 @@ void KBD_input_loop(void *arg) {
    }
 }
 
+void KBD_read_char(char *c) {
+   CLI();
+   while(kbd->read == kbd->write) {
+      PROC_block_on(&kbd->blocked, 1);
+      CLI();
+   }
+   *c = KBD_buff[kbd->read];
+   kbd->read = (kbd->read + 1) % KBD_BUF_SIZE;
+
+   STI();
+}
+
 void KBD_read() {
    CLI();
    while(kbd->read == kbd->write) {

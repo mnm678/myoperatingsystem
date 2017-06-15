@@ -13,9 +13,14 @@
 #include "ata_driver.h"
 #include "vfs.h"
 #include "fat32.h"
+#include "sys_calls.h"
 
-void sys_call_test(int unused, int unused2, int sys_call_num) {
-   asm("int $0x80");
+void user_start() {
+   char c;
+   putc('h');
+   c = getc();
+   putc(c);
+   kexit();
 }
 
 void ata_test(void *arg) {
@@ -89,6 +94,8 @@ int kmain(uint32_t ebx) {
    KBD_init();
    PROC_create_kthread(KBD_input_loop, arg);
    /*PROC_create_kthread(halt_func, arg);*/
+
+   /*PROC_create_kthread(user_start, arg);*/
 
    k = 1;
    while(k) {

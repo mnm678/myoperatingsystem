@@ -13,6 +13,7 @@ void KBD_input_loop(void *arg);
 
 /*must be called from a blocking context*/
 void KBD_read();
+void KBD_read_char(char *c);
 
 void kbd_isr(uint64_t irq, uint64_t err);
 
